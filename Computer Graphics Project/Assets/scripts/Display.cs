@@ -19,7 +19,7 @@ public class Display : MonoBehaviour
     private float initialTime;
 
     private float lastCheckTime;
-    private float timeBeforeRestart;
+    public float timeBeforeRestart;
 
     private float latestMaxDistance;
     
@@ -36,8 +36,6 @@ public class Display : MonoBehaviour
         maxDistance = 0;
 
         lastCheckTime = Time.time;
-        timeBeforeRestart = 5;
-
     }
 
     // Update is called once per frame
