@@ -1,0 +1,130 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Net.Mime;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
+using UnityEngine.UI;
+
+public class Display : MonoBehaviour
+{
+    public GameObject car;
+    private Rigidbody2D carRigidbody;
+    
+    private Text time;
+    private Text maxDistanceText;
+    private Text fitness;
+
+    private float initialPosition;
+    private float maxDistance;
+
+    private float initialTime;
+
+    
+    // RESTART CONDITION WHEN CAR STUCK IN LOOP
+    public float secBeforeRestartWhenLoop;
+    private float lastCheckTimeLoop;
+
+    
+    // RESTART CONDITION WHEN CAR CAN'T MOVE
+    public int secBeforeRestartWhenStuck;
+    public float velocityCondition;
+    private float[] velocityValues;
+    private float lastCheckTimeStuck;
+    private int index;
+    private int nbLowVelocities;
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        carRigidbody = car.GetComponent<Rigidbody2D>();
+        
+        time = this.transform.Find("Time_v").gameObject.GetComponent<Text>();
+        maxDistanceText = this.transform.Find("Distance_v").gameObject.GetComponent<Text>();
+
+        initialTime = Time.time;
+        initialPosition = car.transform.position.x;
+
+        maxDistanceText.text = 0.ToString();
+        maxDistance = 0;
+
+        lastCheckTimeLoop = Time.time;
+        lastCheckTimeStuck = Time.time;
+
+        velocityValues = new float [secBeforeRestartWhenStuck];
+        index = 0;
+        nbLowVelocities = 0;
+
+        for (int i = 0; i < secBeforeRestartWhenStuck; i++)
+        {
+            velocityValues[i] = velocityCondition;
+        }
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        time.text = ((float)((int) ((Time.time - initialTime) * 10)) / 10).ToString();
+
+        
+        
+        // RESTART CONDITION FOR LOOPING
+        float carPositionX = car.transform.position.x;
+        
+        if (((float) ((int) ((carPositionX) * 10)) / 10) > maxDistance+0.1f)
+        {
+            maxDistance = ((float) ((int) ((carPositionX) * 10)) / 10);
+            maxDistanceText.text = ((float)((int) ((carPositionX - initialPosition) * 10)) / 10).ToString();
+            
+            lastCheckTimeLoop = Time.time;
+        }
+        
+        if ((Time.time - lastCheckTimeLoop) > secBeforeRestartWhenLoop)
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
+        
+        //RESTART CONDITION WHEN STUCK
+
+        if (Time.time - initialTime > 2)
+        {
+            if (Time.time - lastCheckTimeStuck >= 1)
+            {
+                velocityValues[index] = carRigidbody.velocity.magnitude;
+
+                if (index >= secBeforeRestartWhenStuck-1)
+                {
+                    index = 0;
+                }
+                else
+                {
+                    index++;
+                }
+
+                lastCheckTimeStuck = Time.time;
+            }
+
+            foreach (float velocity in velocityValues)
+            {
+                if (velocity < velocityCondition)
+                {
+                    nbLowVelocities++;
+                }
+            }
+        
+            if (nbLowVelocities == secBeforeRestartWhenStuck)
+            {
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            }
+            else
+            {
+                nbLowVelocities = 0;
+            }
+        }
+        
+        
+
+
+
+    }
+}
