@@ -5,48 +5,71 @@ using UnityEngine;
 public class CarGenerator : MonoBehaviour
 {
 
-    public GameObject frontWheel;
-    public GameObject backWheel;
+    public GameObject wheel0;
+    public GameObject wheel1;
     public GameObject carBody;
 
+    public CarParameters carParams;
+
     private GameObject other;
-    
-    
-    // Start is called before the first frame update
-    void Start()
+
+    public void GenerateRandomCar()
     {
-
-        // WHEELS AND BODY SCALES
-        float frontWheelScale = Random.Range(0.5f, 1.5f);
-        float backWheelScale = Random.Range(0.5f, 1.5f);
-        float carBodyScaleX = Random.Range(0.5f, 1.5f);
-        float carBodyScaleY = Random.Range(0.5f, 1.5f);
-
+        carParams = ScriptableObject.CreateInstance<CarParameters>();
         
-        frontWheel.transform.localScale = new Vector3(frontWheelScale, frontWheelScale, 1);
-        backWheel.transform.localScale = new Vector3(backWheelScale, backWheelScale, 1);
-        carBody.transform.localScale = new Vector3(carBodyScaleX, carBodyScaleY, 1);
+        PopulateCarBodyParams();
+        ApplyCarBodyParams();
+        PopulateCarWheelParams();
+        ApplyCarWheelParams();
+    }
 
-        
-        // PUT THE WHEELS RANDOMLY
+    private void PopulateCarBodyParams()
+    {
+        float carBodyWidth = Random.Range(CarBody.MINIMUM, CarBody.MAXIMUM);
+        float carBodyHeight = Random.Range(CarBody.MINIMUM, CarBody.MAXIMUM);
+
+        carParams.SetCarBody(carBodyWidth, carBodyHeight);        
+    }
+
+    private void PopulateCarWheelParams()
+    {
+        float Wheel0Diameter = Random.Range(CarWheel.DIAMETER_MINIMUM, CarWheel.DIAMETER_MAXIMUM);
+        float Wheel1Diameter = Random.Range(CarWheel.DIAMETER_MINIMUM, CarWheel.DIAMETER_MAXIMUM);
+
         var bodySize = carBody.GetComponent<SpriteRenderer>().bounds.size;
         float bodyWidth = bodySize.x;
         float bodyHeight = bodySize.y;
 
-        WheelJoint2D frontWheelJoint = frontWheel.GetComponent<WheelJoint2D>();
-        WheelJoint2D backWheelJoint = frontWheel.GetComponent<WheelJoint2D>();
-        
-        float frontWheelPositionX = Random.Range(-bodyWidth, bodyWidth);
-        float frontWheelPositionY = Random.Range(-bodyHeight, bodyHeight);
-        float backWheelPositionX = Random.Range(-bodyWidth, bodyWidth);
-        float backWheelPositionY = Random.Range(-bodyHeight, bodyHeight);
+        float Wheel0PositionX = Random.Range(-bodyWidth, bodyWidth);
+        float Wheel0PositionY = Random.Range(-bodyHeight, bodyHeight);
+        float Wheel1PositionX = Random.Range(-bodyWidth, bodyWidth);
+        float Wheel1PositionY = Random.Range(-bodyHeight, bodyHeight);
 
+        carParams.SetCarWheel(0, Wheel0PositionX, Wheel0PositionY, Wheel0Diameter, true);
+        carParams.SetCarWheel(1, Wheel1PositionX, Wheel1PositionY, Wheel1Diameter, true);
+    }
 
-        frontWheel.transform.localPosition = new Vector3(frontWheelPositionX, frontWheelPositionY, 0);
-        backWheel.transform.localPosition = new Vector3(backWheelPositionX, backWheelPositionY, 0);
+    private void ApplyCarBodyParams()
+    {
+        var body = carParams.GetCarBody();
         
-        frontWheelJoint.connectedAnchor = new Vector2(frontWheelPositionX, frontWheelPositionY);
-        backWheelJoint.connectedAnchor = new Vector2(backWheelPositionX, backWheelPositionY);
+        carBody.transform.localScale = new Vector3(body.width, body.height, 1);
+    }
+
+    private void ApplyCarWheelParams()
+    {
+        var wheel0 = carParams.GetWheel(0);
+        var wheel1 = carParams.GetWheel(1);
         
+        this.wheel0.transform.localScale = new Vector3(wheel0.diameter, wheel0.diameter, 1);
+        this.wheel1.transform.localScale = new Vector3(wheel1.diameter, wheel1.diameter, 1);
+
+        this.wheel0.transform.localPosition = new Vector3(wheel0.xPosition, wheel0.yPosition, 0);
+        this.wheel1.transform.localPosition = new Vector3(wheel1.xPosition, wheel1.yPosition, 0);
+
+        WheelJoint2D frontWheelJoint = this.wheel0.GetComponent<WheelJoint2D>();
+        WheelJoint2D backWheelJoint = this.wheel1.GetComponent<WheelJoint2D>();
+        frontWheelJoint.connectedAnchor = new Vector2(wheel0.xPosition, wheel0.yPosition);
+        backWheelJoint.connectedAnchor = new Vector2(wheel1.xPosition, wheel1.yPosition);
     }
 }

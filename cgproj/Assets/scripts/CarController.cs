@@ -4,26 +4,24 @@ using UnityEngine;
 
 public class CarController : MonoBehaviour
 {
-
-    public bool useBothWheels;
+    public WheelJoint2D wheel0;
+    public WheelJoint2D wheel1;
     
-    public WheelJoint2D backWheel;
-    public WheelJoint2D frontWheel;
-    
-    private WheelJoint2D other;
+    public CarGenerator generator;
 
     
     // Start is called before the first frame update
     void Start()
     {
-        
-        backWheel.useMotor = true;
+        generator.GenerateRandomCar();
+
+        wheel0.useMotor = true;
         var backWheelmotor = new JointMotor2D {motorSpeed = 0, maxMotorTorque = 80};
-        backWheel.motor = backWheelmotor;
+        wheel0.motor = backWheelmotor;
         
-        frontWheel.useMotor = true;
+        wheel1.useMotor = true;
         var frontWheelMotor = new JointMotor2D {motorSpeed = 0, maxMotorTorque = 80};
-        frontWheel.motor = frontWheelMotor;
+        wheel1.motor = frontWheelMotor;
         
         StartCoroutine(MyCoroutine());
     }
@@ -32,48 +30,20 @@ public class CarController : MonoBehaviour
     {
         yield return new WaitForSeconds(2);    //Wait one frame
 
+        var carParams = generator.carParams;
 
-        if (useBothWheels)
+        if (carParams.GetWheel(0).hasMotor)
         {
-            frontWheel.useMotor = true;
-            var frontWheelMotor = new JointMotor2D {motorSpeed = 1000, maxMotorTorque = 70};
-            frontWheel.motor = frontWheelMotor;
-            
-            backWheel.useMotor = true;
+            wheel0.useMotor = true;
             var backWheelmotor = new JointMotor2D {motorSpeed = 1000, maxMotorTorque = 70};
-            backWheel.motor = backWheelmotor;
+            wheel0.motor = backWheelmotor;
         }
 
-        else
+        if (carParams.GetWheel(1).hasMotor)
         {
-            frontWheel.useMotor = false;
-            backWheel.useMotor = false;
-
-            if (Random.value > 0.5)
-            {
-                frontWheel.useMotor = true;
-                var frontWheelMotor = new JointMotor2D {motorSpeed = 1000, maxMotorTorque = 70};
-                frontWheel.motor = frontWheelMotor;
-                other = backWheel;
-            }
-            else
-            {
-                backWheel.useMotor = true;
-                var backWheelmotor = new JointMotor2D {motorSpeed = 1000, maxMotorTorque = 70};
-                backWheel.motor = backWheelmotor;
-                other = frontWheel;
-            }
-
-            if (Random.value > 0.5)
-            {
-                other.useMotor = true;
-                var otherMotor = new JointMotor2D {motorSpeed = 1000, maxMotorTorque = 70};
-                other.motor = otherMotor;        
-            }
-            else
-            {
-                other.useMotor = false;
-            }
+            wheel1.useMotor = true;
+            var backWheelmotor = new JointMotor2D {motorSpeed = 1000, maxMotorTorque = 70};
+            wheel1.motor = backWheelmotor;
         }
     }
     

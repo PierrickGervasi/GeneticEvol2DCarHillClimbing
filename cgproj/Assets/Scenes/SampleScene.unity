@@ -1762,7 +1762,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 890978863}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 9.521742, y: 0.915, z: -10}
+  m_LocalPosition: {x: 9.225547, y: 0.915, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1579663706}
@@ -1881,14 +1881,14 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 3.12, y: 1.28}
+    oldSize: {x: 1, y: 1}
     newSize: {x: 1.47, y: 1.47}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 3.12, y: 1.28}
+  m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
 --- !u!212 &984524495
 SpriteRenderer:
@@ -1949,7 +1949,7 @@ Transform:
   m_GameObject: {fileID: 984524492}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.80343, y: 0.37, z: 0.80343}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1864921860}
   m_RootOrder: 0
@@ -2033,7 +2033,7 @@ Transform:
   m_GameObject: {fileID: 1052323508}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 1.11, y: -0, z: 0}
-  m_LocalScale: {x: 0.9161209, y: 0.9161209, z: 0.91566014}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1864921860}
   m_RootOrder: 1
@@ -2053,7 +2053,7 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 0.735
+  m_Radius: 0.5
 --- !u!235 &1052323512
 WheelJoint2D:
   m_ObjectHideFlags: 0
@@ -2178,7 +2178,7 @@ Transform:
   m_GameObject: {fileID: 1110188316}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0.98, y: -0.03, z: 0}
-  m_LocalScale: {x: 1.3552084, y: 1.3552084, z: 1.3551282}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1864921860}
   m_RootOrder: 2
@@ -2198,7 +2198,7 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 0.735
+  m_Radius: 0.5
 --- !u!235 &1110188320
 WheelJoint2D:
   m_ObjectHideFlags: 0
@@ -2525,7 +2525,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1388800421}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 9.521742, y: 0.915, z: -10}
+  m_LocalPosition: {x: 9.225547, y: 0.915, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -2927,9 +2927,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cf66187f8b65e343a28de46be748348, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  useBothWheels: 0
-  backWheel: {fileID: 1110188320}
-  frontWheel: {fileID: 1052323512}
+  wheel0: {fileID: 1110188320}
+  wheel1: {fileID: 1052323512}
+  generator: {fileID: 1864921862}
 --- !u!114 &1864921862
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2942,9 +2942,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bec035434244f284aa5d56e27fe4720a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  frontWheel: {fileID: 1052323508}
-  backWheel: {fileID: 1110188316}
+  wheel0: {fileID: 1110188316}
+  wheel1: {fileID: 1052323508}
   carBody: {fileID: 984524492}
+  carParams: {fileID: 0}
 --- !u!1 &2136952734
 GameObject:
   m_ObjectHideFlags: 0
