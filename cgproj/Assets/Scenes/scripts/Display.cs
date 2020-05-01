@@ -9,6 +9,9 @@ using UnityEngine.UI;
 public class Display : MonoBehaviour
 {
     public GameObject car;
+
+    public CarEvaluator evaluator;
+
     private Rigidbody2D carRigidbody;
     
     private Text time;
@@ -81,7 +84,7 @@ public class Display : MonoBehaviour
         
         if ((Time.time - lastCheckTimeLoop) > secBeforeRestartWhenLoop)
         {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            TerminateEvaluation();
         }
         
         //RESTART CONDITION WHEN STUCK
@@ -114,17 +117,17 @@ public class Display : MonoBehaviour
         
             if (nbLowVelocities == secBeforeRestartWhenStuck)
             {
-                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+                TerminateEvaluation();
             }
             else
             {
                 nbLowVelocities = 0;
             }
         }
-        
-        
+    }
 
-
-
+    private void TerminateEvaluation()
+    {
+        evaluator.TerminateEvaluation();
     }
 }
