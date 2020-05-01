@@ -14,14 +14,13 @@ public class Display : MonoBehaviour
 
     private Rigidbody2D carRigidbody;
     
+    public float maxDistance;
+    public float initialTime;
+    public float initialPosition;
+
     private Text time;
     private Text maxDistanceText;
     private Text fitness;
-
-    private float initialPosition;
-    private float maxDistance;
-
-    private float initialTime;
 
     
     // RESTART CONDITION WHEN CAR STUCK IN LOOP

@@ -5,8 +5,13 @@ using UnityEngine.SceneManagement;
 
 public class EvolutionManager : MonoBehaviour
 {
-    private List<CarParameters> cars = new List<CarParameters>();
-    private List<CarPerformance> carsPerformance = new List<CarPerformance>();
+    public CarGenerator generator;
+
+    public static readonly int GENERATION_SIZE = 8;
+
+    private CarParameters[] cars = new CarParameters[GENERATION_SIZE];
+    private CarPerformance[] carsPerformance = new CarPerformance[GENERATION_SIZE];
+    private int currentCarIndex;
 
     void OnEnable()
     {
@@ -21,12 +26,15 @@ public class EvolutionManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        SceneManager.LoadScene("EvaluationScene", LoadSceneMode.Additive);
+        currentCarIndex = 0;
 
-        // Generate random cars
-        // Evaluation loop
-        // Load track
-        // Evaluate car
+        for(int i = 0; i < GENERATION_SIZE; ++i)
+        {
+            var car = generator.GenerateRandomCar();
+            cars[i] = car;
+        }
+
+        SceneManager.LoadScene("EvaluationScene", LoadSceneMode.Additive);
     }
 
     // Update is called once per frame
@@ -36,7 +44,16 @@ public class EvolutionManager : MonoBehaviour
     }
 
     public void EvaluationFinished(CarPerformance performance) {
-        Debug.Log("Evaluation Finished!");
+        Debug.Log($"Evaluation Finished! distance - {performance.distance}");
+        carsPerformance[currentCarIndex] = performance;
+        ++currentCarIndex;
+
+        if (currentCarIndex >= GENERATION_SIZE)
+        {
+            Debug.Log("Generation done evaluating!");
+            return;
+        }
+
         StartCoroutine(ReloadEvaluationScene());
     }
 
@@ -51,8 +68,30 @@ public class EvolutionManager : MonoBehaviour
     {
         if (scene.name != "MainScene")
         {
-            Debug.Log("Scene: " + scene.name + " Loaded!");
-            //player = GameObject.FindGameObjectWithTag("Player");
+            if (currentCarIndex >= GENERATION_SIZE)
+            {
+                Debug.Log("Generation done evaluating!");
+                return;
+            }
+
+            var car = cars[currentCarIndex];
+            
+            // Load car
+            var carGameObj = GameObject.Find("Car");
+            if (carGameObj)
+            {
+                var carTransformer = carGameObj.GetComponent<CarTransformer>();
+                carTransformer.carParams = car;
+                carTransformer.TransformByCarParams();
+
+                // Start car
+                var carController =  carGameObj.GetComponent<CarController>();
+                StartCoroutine(carController.StartCarMotorsDelayed());
+            }
+            else
+            {
+                Debug.LogError("Could not get Car game object!");
+            }
         }
     }
 }

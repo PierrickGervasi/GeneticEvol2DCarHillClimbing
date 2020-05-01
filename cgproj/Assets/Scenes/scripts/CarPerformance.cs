@@ -8,4 +8,5 @@ public class CarPerformance : ScriptableObject
     public float averageSpeed;
     public float topSpeed;
     public float time;
+    public bool finishedTrack;
 }

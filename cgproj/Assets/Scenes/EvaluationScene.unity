@@ -428,6 +428,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   car: {fileID: 1864921858}
   evaluator: {fileID: 1590280066}
+  maxDistance: 0
+  initialTime: 0
+  initialPosition: 0
   secBeforeRestartWhenLoop: 20
   secBeforeRestartWhenStuck: 3
   velocityCondition: 0.3
@@ -1764,7 +1767,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 890978863}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 9.225547, y: 0.915, z: -10}
+  m_LocalPosition: {x: 9.011833, y: 0.915, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1579663706}
@@ -2527,7 +2530,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1388800421}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 9.225547, y: 0.915, z: -10}
+  m_LocalPosition: {x: 9.011833, y: 0.915, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -2647,6 +2650,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 663758e79f2e0a44285e53a4649dbab7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  performanceDisplay: {fileID: 276948556}
 --- !u!4 &1590280067
 Transform:
   m_ObjectHideFlags: 0
@@ -2917,7 +2921,7 @@ GameObject:
   - component: {fileID: 1864921862}
   m_Layer: 0
   m_Name: Car
-  m_TagString: Untagged
+  m_TagString: Car
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2974,7 +2978,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   wheel0: {fileID: 1110188320}
   wheel1: {fileID: 1052323512}
-  generator: {fileID: 1864921862}
+  transformer: {fileID: 1864921862}
 --- !u!114 &1864921862
 MonoBehaviour:
   m_ObjectHideFlags: 0

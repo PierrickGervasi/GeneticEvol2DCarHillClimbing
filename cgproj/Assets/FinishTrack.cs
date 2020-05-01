@@ -11,7 +11,7 @@ public class FinishTrack : MonoBehaviour
     {
         if (other.gameObject.name.Contains("Car"))
         {
-            evaluator.TerminateEvaluation();
+            evaluator.TerminateEvaluation(true);
         }
     }
 }
