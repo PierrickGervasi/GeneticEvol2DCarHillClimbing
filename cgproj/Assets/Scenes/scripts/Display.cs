@@ -9,16 +9,18 @@ using UnityEngine.UI;
 public class Display : MonoBehaviour
 {
     public GameObject car;
+
+    public CarEvaluator evaluator;
+
     private Rigidbody2D carRigidbody;
     
+    public float maxDistance;
+    public float initialTime;
+    public float initialPosition;
+
     private Text time;
     private Text maxDistanceText;
     private Text fitness;
-
-    private float initialPosition;
-    private float maxDistance;
-
-    private float initialTime;
 
     
     // RESTART CONDITION WHEN CAR STUCK IN LOOP
@@ -81,7 +83,7 @@ public class Display : MonoBehaviour
         
         if ((Time.time - lastCheckTimeLoop) > secBeforeRestartWhenLoop)
         {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            TerminateEvaluation();
         }
         
         //RESTART CONDITION WHEN STUCK
@@ -114,17 +116,17 @@ public class Display : MonoBehaviour
         
             if (nbLowVelocities == secBeforeRestartWhenStuck)
             {
-                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+                TerminateEvaluation();
             }
             else
             {
                 nbLowVelocities = 0;
             }
         }
-        
-        
+    }
 
-
-
+    private void TerminateEvaluation()
+    {
+        evaluator.TerminateEvaluation();
     }
 }

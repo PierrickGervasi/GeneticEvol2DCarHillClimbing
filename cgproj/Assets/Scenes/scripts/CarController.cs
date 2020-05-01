@@ -7,14 +7,12 @@ public class CarController : MonoBehaviour
     public WheelJoint2D wheel0;
     public WheelJoint2D wheel1;
     
-    public CarGenerator generator;
+    public CarTransformer transformer;
 
     
     // Start is called before the first frame update
     void Start()
     {
-        generator.GenerateRandomCar();
-
         wheel0.useMotor = true;
         var backWheelmotor = new JointMotor2D {motorSpeed = 0, maxMotorTorque = 80};
         wheel0.motor = backWheelmotor;
@@ -23,14 +21,14 @@ public class CarController : MonoBehaviour
         var frontWheelMotor = new JointMotor2D {motorSpeed = 0, maxMotorTorque = 80};
         wheel1.motor = frontWheelMotor;
         
-        StartCoroutine(MyCoroutine());
+        
     }
     
-    IEnumerator MyCoroutine()
+    public IEnumerator StartCarMotorsDelayed()
     {
         yield return new WaitForSeconds(2);    //Wait one frame
 
-        var carParams = generator.carParams;
+        var carParams = transformer.carParams;
 
         if (carParams.GetWheel(0).hasMotor)
         {

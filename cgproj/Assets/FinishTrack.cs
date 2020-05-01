@@ -6,11 +6,12 @@ using UnityEngine.SceneManagement;
 
 public class FinishTrack : MonoBehaviour
 {
+    public CarEvaluator evaluator;
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.gameObject.name.Contains("Car"))
         {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            evaluator.TerminateEvaluation(true);
         }
     }
 }
