@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public enum GeneIndex
 {
@@ -15,6 +16,76 @@ public enum GeneIndex
     WHEEL_1_Y,
     WHEEL_1_MOTOR,
     WHEEL_1_DIAMETER,
+}
+
+public interface IGene
+{
+    IGene MutatedCopy();
+    IGene GeneCopy();
+}
+
+public class FloatGene : IGene
+{
+    public float value;
+    protected float minimum;
+    protected float maximum;
+
+    public FloatGene(float val, float min, float max)
+    {
+        value = val;
+        minimum = min;
+        maximum = max;
+    }
+
+    public IGene MutatedCopy()
+    {
+        var mutatedValue = SampleGaussian(value);
+        if (mutatedValue < minimum)
+        {
+            mutatedValue = minimum;
+        } else if (mutatedValue > maximum)
+        {
+            mutatedValue = maximum;
+        }
+
+        Debug.Log($"Mutated from {value} to {mutatedValue}.");
+
+        return new FloatGene(mutatedValue, minimum, maximum);
+    }
+
+    public IGene GeneCopy()
+    {
+        return new FloatGene(value, minimum, maximum);
+    }
+
+    private static float SampleGaussian(float mean, float stddev = 0.15f)
+    {
+        float x1 = Random.Range(0f,1f);
+        float x2 = Random.Range(0f,1f);
+
+        float y1 = (float) (Math.Sqrt(-2.0 * Math.Log(x1)) * Math.Cos(2.0 * Math.PI * x2));
+        return y1 * stddev + mean;
+    }
+}
+
+public class BoolGene : IGene
+{
+    public bool value;
+
+    public BoolGene(bool val)
+    {
+        value = val;
+    }
+
+    public IGene GeneCopy()
+    {
+        return new BoolGene(value);
+    }
+
+    public IGene MutatedCopy()
+    {
+        return new BoolGene(!value);
+    }
 }
 
 public class CarWheel
@@ -55,24 +126,39 @@ public class CarBody
 public class CarParameters : ScriptableObject
 {
     public static readonly int GENE_COUNT = 10;
-    private float[] genes = new float[GENE_COUNT];
-
-    public float GetGene(int index)
+    private IGene[] genes = new IGene[GENE_COUNT];
+    
+    public CarParameters()
     {
-        return 0.0f;
+        genes[(int)GeneIndex.BODY_WIDTH] = new FloatGene(0f, CarBody.MINIMUM, CarBody.MAXIMUM);
+        genes[(int)GeneIndex.BODY_HEIGHT] = new FloatGene(0f, CarBody.MINIMUM, CarBody.MAXIMUM);
+        genes[(int)GeneIndex.WHEEL_0_X] = new FloatGene(0f, float.MinValue, float.MaxValue);
+        genes[(int)GeneIndex.WHEEL_0_Y] = new FloatGene(0f, float.MinValue, float.MaxValue);
+        genes[(int)GeneIndex.WHEEL_0_DIAMETER] = new FloatGene(CarWheel.DIAMETER_MINIMUM, CarWheel.DIAMETER_MINIMUM, CarWheel.DIAMETER_MAXIMUM);
+        genes[(int)GeneIndex.WHEEL_1_X] = new FloatGene(0f, float.MinValue, float.MaxValue);
+        genes[(int)GeneIndex.WHEEL_1_Y] = new FloatGene(0f, float.MinValue, float.MaxValue);
+        genes[(int)GeneIndex.WHEEL_1_DIAMETER] = new FloatGene(CarWheel.DIAMETER_MINIMUM, CarWheel.DIAMETER_MINIMUM, CarWheel.DIAMETER_MAXIMUM);
+
+        genes[(int)GeneIndex.WHEEL_0_MOTOR] = new BoolGene(false);
+        genes[(int)GeneIndex.WHEEL_1_MOTOR] = new BoolGene(false);
+    } 
+
+    public IGene GetGene(int index)
+    {
+        return genes[index];
     }
 
-    public void SetGene(int index, float val)
+    public void SetGene(int index, IGene val)
     {
         // TODO: check bounds
-        genes[index] = val;
+        genes[index] = val.GeneCopy();
     }
 
     public void SetCarBody(float width, float height)
     {
         // TODO: check bounds
-        genes[(int)GeneIndex.BODY_WIDTH] = width;
-        genes[(int)GeneIndex.BODY_HEIGHT] = height;
+        ((FloatGene)(genes[(int)GeneIndex.BODY_WIDTH])).value = width;
+        ((FloatGene)(genes[(int)GeneIndex.BODY_HEIGHT])).value = height;
     }
 
     public void SetCarWheel(int index, float x, float y, float diameter, bool hasMotor)
@@ -82,18 +168,19 @@ public class CarParameters : ScriptableObject
         {
             case 0:
             {
-                genes[(int)GeneIndex.WHEEL_0_X] = x;
-                genes[(int)GeneIndex.WHEEL_0_Y] = y;
-                genes[(int)GeneIndex.WHEEL_0_DIAMETER] = diameter;
-                genes[(int)GeneIndex.WHEEL_0_MOTOR] = Convert.ToSingle(y);
+                
+                ((FloatGene)(genes[(int)GeneIndex.WHEEL_0_X])).value = x;
+                ((FloatGene)(genes[(int)GeneIndex.WHEEL_0_Y])).value = y;
+                ((FloatGene)(genes[(int)GeneIndex.WHEEL_0_DIAMETER])).value = diameter;
+                ((BoolGene)(genes[(int)GeneIndex.WHEEL_0_MOTOR])).value = hasMotor;
                 break;
             }
             case 1:
             {
-                genes[(int)GeneIndex.WHEEL_1_X] = x;
-                genes[(int)GeneIndex.WHEEL_1_Y] = y;
-                genes[(int)GeneIndex.WHEEL_1_DIAMETER] = diameter;
-                genes[(int)GeneIndex.WHEEL_1_MOTOR] = Convert.ToSingle(y);
+                ((FloatGene)(genes[(int)GeneIndex.WHEEL_1_X])).value = x;
+                ((FloatGene)(genes[(int)GeneIndex.WHEEL_1_Y])).value = y;
+                ((FloatGene)(genes[(int)GeneIndex.WHEEL_1_DIAMETER])).value = diameter;
+                ((BoolGene)(genes[(int)GeneIndex.WHEEL_1_MOTOR])).value = hasMotor;
                 break;
             }
             default:
@@ -104,7 +191,9 @@ public class CarParameters : ScriptableObject
 
     public CarBody GetCarBody()
     {
-        var cb = new CarBody(genes[(int)GeneIndex.BODY_WIDTH], genes[(int)GeneIndex.BODY_HEIGHT]);
+        var width = ((FloatGene)(genes[(int)GeneIndex.BODY_WIDTH])).value;
+        var height = ((FloatGene)(genes[(int)GeneIndex.BODY_HEIGHT])).value;
+        var cb = new CarBody(width, height);
         return cb;
     }
 
@@ -116,14 +205,20 @@ public class CarParameters : ScriptableObject
         {
             case 0:
             {
-                bool motor = Convert.ToBoolean(genes[(int)GeneIndex.WHEEL_0_MOTOR]);
-                wheel = new CarWheel(genes[(int)GeneIndex.WHEEL_0_X], genes[(int)GeneIndex.WHEEL_0_Y], genes[(int)GeneIndex.WHEEL_0_DIAMETER], motor);
+                bool motor = ((BoolGene)(genes[(int)GeneIndex.WHEEL_0_MOTOR])).value;
+                var x = ((FloatGene)(genes[(int)GeneIndex.WHEEL_0_X])).value;
+                var y = ((FloatGene)(genes[(int)GeneIndex.WHEEL_0_Y])).value;
+                var diameter = ((FloatGene)(genes[(int)GeneIndex.WHEEL_0_DIAMETER])).value;
+                wheel = new CarWheel(x, y, diameter, motor);
                 break;
             }
             case 1:
             {
-                bool motor = Convert.ToBoolean(genes[(int)GeneIndex.WHEEL_1_MOTOR]);
-                wheel = new CarWheel(genes[(int)GeneIndex.WHEEL_1_X], genes[(int)GeneIndex.WHEEL_1_Y], genes[(int)GeneIndex.WHEEL_1_DIAMETER], motor);
+                bool motor = ((BoolGene)(genes[(int)GeneIndex.WHEEL_1_MOTOR])).value;
+                var x = ((FloatGene)(genes[(int)GeneIndex.WHEEL_1_X])).value;
+                var y = ((FloatGene)(genes[(int)GeneIndex.WHEEL_1_Y])).value;
+                var diameter = ((FloatGene)(genes[(int)GeneIndex.WHEEL_1_DIAMETER])).value;
+                wheel = new CarWheel(x, y, diameter, motor);
                 break;
             }
             default:
