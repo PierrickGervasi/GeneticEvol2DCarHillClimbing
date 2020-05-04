@@ -20,7 +20,7 @@ public class CarEvaluator : MonoBehaviour
             var totalTime = Time.time - performanceDisplay.initialTime;
             var distance = performanceDisplay.maxDistance - performanceDisplay.initialPosition;
 
-            var performance = new CarPerformance();
+            var performance = ScriptableObject.CreateInstance<CarPerformance>();
             performance.distance = distance;
             performance.time = totalTime;
             performance.finishedTrack = reachedTrackEnding;

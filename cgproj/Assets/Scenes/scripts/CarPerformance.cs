@@ -9,4 +9,9 @@ public class CarPerformance : ScriptableObject
     public float topSpeed;
     public float time;
     public bool finishedTrack;
+
+    public float TotalScore()
+    {
+        return distance;
+    }
 }

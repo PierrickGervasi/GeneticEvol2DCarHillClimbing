@@ -1,16 +1,22 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Random = UnityEngine.Random;
 
 public class EvolutionManager : MonoBehaviour
 {
     public CarGenerator generator;
 
-    public static readonly int GENERATION_SIZE = 8;
+    public static readonly int GENERATION_SIZE = 10;
+    public static readonly float crossoverRate = 0.9f;
+    public static readonly float mutationRate = 0.2f;
 
     private CarParameters[] cars = new CarParameters[GENERATION_SIZE];
     private CarPerformance[] carsPerformance = new CarPerformance[GENERATION_SIZE];
+    private int bestCar;
+    private int secondBestCar;
     private int currentCarIndex;
 
     void OnEnable()
@@ -26,7 +32,7 @@ public class EvolutionManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        currentCarIndex = 0;
+        NewGeneration();
 
         for(int i = 0; i < GENERATION_SIZE; ++i)
         {
@@ -45,12 +51,19 @@ public class EvolutionManager : MonoBehaviour
 
     public void EvaluationFinished(CarPerformance performance) {
         Debug.Log($"Evaluation Finished! distance - {performance.distance}");
+        if (currentCarIndex != 0 && performance.TotalScore() > carsPerformance[bestCar].TotalScore())
+        {
+            secondBestCar = bestCar;
+            bestCar = currentCarIndex;
+        }
+
         carsPerformance[currentCarIndex] = performance;
         ++currentCarIndex;
 
         if (currentCarIndex >= GENERATION_SIZE)
         {
             Debug.Log("Generation done evaluating!");
+            GenerateNextGeneration();
             return;
         }
 
@@ -93,5 +106,50 @@ public class EvolutionManager : MonoBehaviour
                 Debug.LogError("Could not get Car game object!");
             }
         }
+    }
+
+    private void GenerateNextGeneration()
+    {
+        var bestParent = cars[bestCar];
+        var secondBestParent = cars[secondBestCar];
+
+        NewGeneration();
+        
+        for (int i = 0; i < GENERATION_SIZE; ++i)
+        {
+            int crossoverPoint = CarParameters.GENE_COUNT;
+            var shouldCrossOver = Random.Range(0.0f,1.0f) <= crossoverRate;
+            var car = ScriptableObject.CreateInstance<CarParameters>();
+            if (shouldCrossOver)
+            {
+                crossoverPoint = Convert.ToInt32(Random.Range(0.0f, 1.0f) * (CarParameters.GENE_COUNT - 1));
+            }
+            Debug.Log($"crossover at {crossoverPoint}");
+            for (int j = 0; j < CarParameters.GENE_COUNT; ++j)
+            {
+                if (j >= crossoverPoint)
+                {
+                    car.SetGene(j, secondBestParent.GetGene(j));
+                }
+                else
+                {
+                    car.SetGene(j, bestParent.GetGene(j));
+                }
+
+                if (Random.Range(0.0f, 1.0f) <= mutationRate)
+                {
+                    car.SetGene(j, car.GetGene(j).MutatedCopy());
+                }
+            }
+
+            cars[i] = car;
+        }
+    }
+
+    private void NewGeneration()
+    {
+        currentCarIndex = 0;
+        bestCar = 0;
+        secondBestCar = 0;
     }
 }
