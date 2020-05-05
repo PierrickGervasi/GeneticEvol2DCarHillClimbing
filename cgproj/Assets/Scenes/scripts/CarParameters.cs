@@ -93,16 +93,19 @@ public class CarWheel
     public static readonly float DIAMETER_MINIMUM = 0.8f;
     public static readonly float DIAMETER_MAXIMUM = 1.8f;
 
+    public static readonly float RATIO_MINIMUM = 0.0f;
+    public static readonly float RATIO_MAXIMUM = 1.0f;
+
     public CarWheel(float x, float y, float d, bool motor)
     {
         // TODO: check bounds
-        xPosition = x;
-        yPosition = y;
+        xRatio = x;
+        yRatio = y;
         diameter = d;
         hasMotor = motor;
     }
-    public float xPosition;
-    public float yPosition;
+    public float xRatio;
+    public float yRatio;
     public float diameter;
     public bool hasMotor;
 }
@@ -132,11 +135,11 @@ public class CarParameters : ScriptableObject
     {
         genes[(int)GeneIndex.BODY_WIDTH] = new FloatGene(0f, CarBody.MINIMUM, CarBody.MAXIMUM);
         genes[(int)GeneIndex.BODY_HEIGHT] = new FloatGene(0f, CarBody.MINIMUM, CarBody.MAXIMUM);
-        genes[(int)GeneIndex.WHEEL_0_X] = new FloatGene(0f, float.MinValue, float.MaxValue);
-        genes[(int)GeneIndex.WHEEL_0_Y] = new FloatGene(0f, float.MinValue, float.MaxValue);
+        genes[(int)GeneIndex.WHEEL_0_X] = new FloatGene(0f, CarWheel.RATIO_MINIMUM, CarWheel.RATIO_MAXIMUM);
+        genes[(int)GeneIndex.WHEEL_0_Y] = new FloatGene(0f, CarWheel.RATIO_MINIMUM, CarWheel.RATIO_MAXIMUM);
         genes[(int)GeneIndex.WHEEL_0_DIAMETER] = new FloatGene(CarWheel.DIAMETER_MINIMUM, CarWheel.DIAMETER_MINIMUM, CarWheel.DIAMETER_MAXIMUM);
-        genes[(int)GeneIndex.WHEEL_1_X] = new FloatGene(0f, float.MinValue, float.MaxValue);
-        genes[(int)GeneIndex.WHEEL_1_Y] = new FloatGene(0f, float.MinValue, float.MaxValue);
+        genes[(int)GeneIndex.WHEEL_1_X] = new FloatGene(0f, CarWheel.RATIO_MINIMUM, CarWheel.RATIO_MAXIMUM);
+        genes[(int)GeneIndex.WHEEL_1_Y] = new FloatGene(0f, CarWheel.RATIO_MINIMUM, CarWheel.RATIO_MAXIMUM);
         genes[(int)GeneIndex.WHEEL_1_DIAMETER] = new FloatGene(CarWheel.DIAMETER_MINIMUM, CarWheel.DIAMETER_MINIMUM, CarWheel.DIAMETER_MAXIMUM);
 
         genes[(int)GeneIndex.WHEEL_0_MOTOR] = new BoolGene(false);
