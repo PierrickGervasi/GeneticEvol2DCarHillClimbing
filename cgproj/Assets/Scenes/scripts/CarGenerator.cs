@@ -32,7 +32,10 @@ public class CarGenerator : MonoBehaviour
         float Wheel1RatioX = Random.Range(CarWheel.RATIO_MINIMUM, CarWheel.RATIO_MAXIMUM);
         float Wheel1RatioY = Random.Range(CarWheel.RATIO_MINIMUM, CarWheel.RATIO_MAXIMUM);
 
-        carParams.SetCarWheel(0, Wheel0RatioX, Wheel0RatioY, Wheel0Diameter, true);
-        carParams.SetCarWheel(1, Wheel1RatioX, Wheel1RatioY, Wheel1Diameter, true);
+        bool wheel0motor = Random.Range(0.0f,1.0f) > 0.5;
+        bool wheel1motor = Random.Range(0.0f,1.0f) > 0.5;
+
+        carParams.SetCarWheel(0, Wheel0RatioX, Wheel0RatioY, Wheel0Diameter, wheel0motor);
+        carParams.SetCarWheel(1, Wheel1RatioX, Wheel1RatioY, Wheel1Diameter, wheel1motor);
     }
 }

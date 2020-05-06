@@ -48,8 +48,6 @@ public class FloatGene : IGene
             mutatedValue = maximum;
         }
 
-        Debug.Log($"Mutated from {value} to {mutatedValue}.");
-
         return new FloatGene(mutatedValue, minimum, maximum);
     }
 

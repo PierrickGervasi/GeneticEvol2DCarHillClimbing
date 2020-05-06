@@ -11,7 +11,19 @@ public class EvolutionManager : MonoBehaviour
 
     public static readonly int GENERATION_SIZE = 10;
     public static readonly float crossoverRate = 0.9f;
-    public static readonly float mutationRate = 0.2f;
+    public static readonly float mutationRate = 0.06f;
+
+    public bool manualCarParams = false;
+    public float manualBodyWidth = 2.5f;
+    public float manualBodyHeight = 1.5f;
+    public float manualWheel0Diameter = 1.2f;
+    public float manualWheel0XRatio = 0.1f;
+    public float manualWheel0YRatio = 0.1f;
+    public bool manualWheel0Motor = true;
+    public float manualWheel1Diameter = 1.2f;
+    public float manualWheel1XRatio = 0.9f;
+    public float manualWheel1YRatio = 0.1f;
+    public bool manualWheel1Motor = false;
 
     private CarParameters[] cars = new CarParameters[GENERATION_SIZE];
     private CarPerformance[] carsPerformance = new CarPerformance[GENERATION_SIZE];
@@ -36,7 +48,19 @@ public class EvolutionManager : MonoBehaviour
 
         for(int i = 0; i < GENERATION_SIZE; ++i)
         {
-            var car = generator.GenerateRandomCar();
+            CarParameters car = null;
+            if(manualCarParams)
+            {
+                car = ScriptableObject.CreateInstance<CarParameters>();
+                car.SetCarBody(manualBodyWidth, manualBodyHeight);
+                car.SetCarWheel(0, manualWheel0XRatio, manualWheel0YRatio, manualWheel0Diameter, manualWheel0Motor);
+                car.SetCarWheel(1, manualWheel1XRatio, manualWheel1YRatio, manualWheel1Diameter, manualWheel1Motor);
+            }
+            else
+            {
+                car = generator.GenerateRandomCar();
+            }
+            
             cars[i] = car;
         }
 
@@ -51,10 +75,17 @@ public class EvolutionManager : MonoBehaviour
 
     public void EvaluationFinished(CarPerformance performance) {
         Debug.Log($"Evaluation Finished! distance - {performance.distance}");
-        if (currentCarIndex != 0 && performance.TotalScore() > carsPerformance[bestCar].TotalScore())
+        if (currentCarIndex != 0)
         {
-            secondBestCar = bestCar;
-            bestCar = currentCarIndex;
+            if (performance.TotalScore() > carsPerformance[bestCar].TotalScore())
+            {
+                secondBestCar = bestCar;
+                bestCar = currentCarIndex;
+            }
+            else if(performance.TotalScore() > carsPerformance[secondBestCar].TotalScore())
+            {
+                secondBestCar = currentCarIndex;
+            }
         }
 
         carsPerformance[currentCarIndex] = performance;
@@ -112,6 +143,8 @@ public class EvolutionManager : MonoBehaviour
     {
         var bestParent = cars[bestCar];
         var secondBestParent = cars[secondBestCar];
+
+        Debug.LogWarning($"New Generation from {carsPerformance[bestCar].TotalScore()} and {carsPerformance[secondBestCar].TotalScore()}");
 
         NewGeneration();
         
