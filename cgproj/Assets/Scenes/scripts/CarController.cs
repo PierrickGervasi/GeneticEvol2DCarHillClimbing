@@ -13,12 +13,12 @@ public class CarController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        wheel0.useMotor = true;
-        var backWheelmotor = new JointMotor2D {motorSpeed = 0, maxMotorTorque = 80};
+        wheel0.useMotor = false;
+        var backWheelmotor = new JointMotor2D {motorSpeed = 1000, maxMotorTorque = 0};
         wheel0.motor = backWheelmotor;
         
-        wheel1.useMotor = true;
-        var frontWheelMotor = new JointMotor2D {motorSpeed = 0, maxMotorTorque = 80};
+        wheel1.useMotor = false;
+        var frontWheelMotor = new JointMotor2D {motorSpeed = 1000, maxMotorTorque = 0};
         wheel1.motor = frontWheelMotor;
         
         
@@ -33,15 +33,15 @@ public class CarController : MonoBehaviour
         if (carParams.GetWheel(0).hasMotor)
         {
             wheel0.useMotor = true;
-            var backWheelmotor = new JointMotor2D {motorSpeed = 1000, maxMotorTorque = 70};
-            wheel0.motor = backWheelmotor;
+            var wheelMotor = new JointMotor2D {motorSpeed = 1000, maxMotorTorque = 70};
+            wheel0.motor = wheelMotor;
         }
 
         if (carParams.GetWheel(1).hasMotor)
         {
             wheel1.useMotor = true;
-            var backWheelmotor = new JointMotor2D {motorSpeed = 1000, maxMotorTorque = 70};
-            wheel1.motor = backWheelmotor;
+            var wheelMotor = new JointMotor2D {motorSpeed = 1000, maxMotorTorque = 70};
+            wheel1.motor = wheelMotor;
         }
     }
     
