@@ -13,6 +13,18 @@ public class EvolutionManager : MonoBehaviour
     public static readonly float crossoverRate = 0.9f;
     public static readonly float mutationRate = 0.06f;
 
+    public bool manualCarParams = false;
+    public float manualBodyWidth = 2.5f;
+    public float manualBodyHeight = 1.5f;
+    public float manualWheel0Diameter = 1.2f;
+    public float manualWheel0XRatio = 0.1f;
+    public float manualWheel0YRatio = 0.1f;
+    public bool manualWheel0Motor = true;
+    public float manualWheel1Diameter = 1.2f;
+    public float manualWheel1XRatio = 0.9f;
+    public float manualWheel1YRatio = 0.1f;
+    public bool manualWheel1Motor = false;
+
     private CarParameters[] cars = new CarParameters[GENERATION_SIZE];
     private CarPerformance[] carsPerformance = new CarPerformance[GENERATION_SIZE];
     private int bestCar;
@@ -36,7 +48,19 @@ public class EvolutionManager : MonoBehaviour
 
         for(int i = 0; i < GENERATION_SIZE; ++i)
         {
-            var car = generator.GenerateRandomCar();
+            CarParameters car = null;
+            if(manualCarParams)
+            {
+                car = ScriptableObject.CreateInstance<CarParameters>();
+                car.SetCarBody(manualBodyWidth, manualBodyHeight);
+                car.SetCarWheel(0, manualWheel0XRatio, manualWheel0YRatio, manualWheel0Diameter, manualWheel0Motor);
+                car.SetCarWheel(1, manualWheel1XRatio, manualWheel1YRatio, manualWheel1Diameter, manualWheel1Motor);
+            }
+            else
+            {
+                car = generator.GenerateRandomCar();
+            }
+            
             cars[i] = car;
         }
 
