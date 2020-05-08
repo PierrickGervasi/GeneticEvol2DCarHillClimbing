@@ -7,16 +7,21 @@ public class CarEvaluator : MonoBehaviour
     public Display performanceDisplay;
     private EvolutionManager evolutionManager;
 
+    private bool evaluationTerminated;
+
     void Start()
     {
+        evaluationTerminated = false;
         var go = GameObject.Find("EvolutionManager");
         evolutionManager = go.GetComponent<EvolutionManager>();
     }
 
     public void TerminateEvaluation(bool reachedTrackEnding = false)
     {
-        if (evolutionManager != null)
+        if (evolutionManager != null && evaluationTerminated == false)
         {
+            evaluationTerminated = true;
+            
             var totalTime = Time.time - performanceDisplay.initialTime;
             var distance = performanceDisplay.maxDistance - performanceDisplay.initialPosition;
 

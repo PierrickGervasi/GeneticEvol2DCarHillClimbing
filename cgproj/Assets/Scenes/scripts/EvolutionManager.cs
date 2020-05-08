@@ -9,9 +9,9 @@ public class EvolutionManager : MonoBehaviour
 {
     public CarGenerator generator;
 
-    public static readonly int GENERATION_SIZE = 6;
+    public static readonly int GENERATION_SIZE = 8;
     public static readonly float crossoverRate = 0.9f;
-    public static readonly float mutationRate = 0.1f;
+    public static readonly float mutationRate = 0.15f;
 
     public bool manualCarParams = false;
     public float manualBodyWidth = 2.5f;
@@ -98,7 +98,6 @@ public class EvolutionManager : MonoBehaviour
         {
             Debug.Log("Generation done evaluating!");
             GenerateNextGeneration();
-            return;
         }
 
         StartCoroutine(ReloadEvaluationScene());
