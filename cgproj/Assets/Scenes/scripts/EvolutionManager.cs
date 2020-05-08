@@ -9,9 +9,9 @@ public class EvolutionManager : MonoBehaviour
 {
     public CarGenerator generator;
 
-    public static readonly int GENERATION_SIZE = 10;
+    public static readonly int GENERATION_SIZE = 8;
     public static readonly float crossoverRate = 0.9f;
-    public static readonly float mutationRate = 0.06f;
+    public static readonly float mutationRate = 0.15f;
 
     public bool manualCarParams = false;
     public float manualBodyWidth = 2.5f;
@@ -31,6 +31,8 @@ public class EvolutionManager : MonoBehaviour
     private int secondBestCar;
     private int currentCarIndex;
 
+    private int generation;
+
     void OnEnable()
     {
         SceneManager.sceneLoaded += OnSceneFinishedLoading;
@@ -44,6 +46,7 @@ public class EvolutionManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        generation = 0;
         NewGeneration();
 
         for(int i = 0; i < GENERATION_SIZE; ++i)
@@ -74,10 +77,10 @@ public class EvolutionManager : MonoBehaviour
     }
 
     public void EvaluationFinished(CarPerformance performance) {
-        Debug.Log($"Evaluation Finished! distance - {performance.distance}");
+        Debug.Log($"{generation}-{currentCarIndex} - Evaluation Finished! distance - {performance.distance}");
         if (currentCarIndex != 0)
         {
-            if (performance.TotalScore() > carsPerformance[bestCar].TotalScore())
+            if (performance.TotalScore() >= carsPerformance[bestCar].TotalScore())
             {
                 secondBestCar = bestCar;
                 bestCar = currentCarIndex;
@@ -95,7 +98,6 @@ public class EvolutionManager : MonoBehaviour
         {
             Debug.Log("Generation done evaluating!");
             GenerateNextGeneration();
-            return;
         }
 
         StartCoroutine(ReloadEvaluationScene());
@@ -141,6 +143,8 @@ public class EvolutionManager : MonoBehaviour
 
     private void GenerateNextGeneration()
     {
+        ++generation;
+
         var bestParent = cars[bestCar];
         var secondBestParent = cars[secondBestCar];
 
@@ -183,6 +187,6 @@ public class EvolutionManager : MonoBehaviour
     {
         currentCarIndex = 0;
         bestCar = 0;
-        secondBestCar = 0;
+        secondBestCar = 1;
     }
 }
