@@ -9,7 +9,8 @@ public class EvolutionManager : MonoBehaviour
 {
     public CarGenerator generator;
 
-    public static readonly int GENERATION_SIZE = 10;
+    public static readonly int nbrOfGenerations = 5;
+    public static readonly int GENERATION_SIZE = 4;
     public static readonly float crossoverRate = 0.9f;
     public static readonly float mutationRate = 0.06f;
 
@@ -29,7 +30,8 @@ public class EvolutionManager : MonoBehaviour
     private CarPerformance[] carsPerformance = new CarPerformance[GENERATION_SIZE];
     private int bestCar;
     private int secondBestCar;
-    private int currentCarIndex;
+    public int currentCarIndex;
+    public int currentGenIndex;
 
     void OnEnable()
     {
