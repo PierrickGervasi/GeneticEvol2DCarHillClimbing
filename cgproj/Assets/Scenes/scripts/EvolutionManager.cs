@@ -9,7 +9,8 @@ public class EvolutionManager : MonoBehaviour
 {
     public CarGenerator generator;
 
-    public static readonly int GENERATION_SIZE = 8;
+    public static readonly int nbrOfGen = 3;
+    public static readonly int GENERATION_SIZE = 3;
     public static readonly float crossoverRate = 0.9f;
     public static readonly float mutationRate = 0.15f;
 
@@ -29,9 +30,8 @@ public class EvolutionManager : MonoBehaviour
     private CarPerformance[] carsPerformance = new CarPerformance[GENERATION_SIZE];
     private int bestCar;
     private int secondBestCar;
-    private int currentCarIndex;
-
-    private int generation;
+    public int currentCarIndex;
+    public int generation;
 
     void OnEnable()
     {
@@ -69,12 +69,7 @@ public class EvolutionManager : MonoBehaviour
 
         SceneManager.LoadScene("EvaluationScene", LoadSceneMode.Additive);
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    
 
     public void EvaluationFinished(CarPerformance performance) {
         Debug.Log($"{generation}-{currentCarIndex} - Evaluation Finished! distance - {performance.distance}");
@@ -96,8 +91,16 @@ public class EvolutionManager : MonoBehaviour
 
         if (currentCarIndex >= GENERATION_SIZE)
         {
-            Debug.Log("Generation done evaluating!");
             GenerateNextGeneration();
+
+//            if (generation < nbrOfGen-1)
+//            {
+//            }
+//            else
+//            {
+//                // Action if we reached the limit of generations
+//            }
+            
         }
 
         StartCoroutine(ReloadEvaluationScene());

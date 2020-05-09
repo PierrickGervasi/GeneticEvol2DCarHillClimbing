@@ -166,7 +166,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   generator: {fileID: 1728479247}
-  manualCarParams: 0
+  manualCarParams: 1
   manualBodyWidth: 2.5
   manualBodyHeight: 1.5
   manualWheel0Diameter: 1.2
@@ -177,6 +177,8 @@ MonoBehaviour:
   manualWheel1XRatio: 0.9
   manualWheel1YRatio: 0.1
   manualWheel1Motor: 0
+  currentCarIndex: 0
+  generation: 0
 --- !u!114 &1728479247
 MonoBehaviour:
   m_ObjectHideFlags: 0
