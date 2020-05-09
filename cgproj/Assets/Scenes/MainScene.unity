@@ -166,7 +166,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   generator: {fileID: 1728479247}
-  manualCarParams: 1
+  dynamicRates: 1
+  mutationRate: 0
+  crossoverRate: 1
+  manualCarParams: 0
   manualBodyWidth: 2.5
   manualBodyHeight: 1.5
   manualWheel0Diameter: 1.2
