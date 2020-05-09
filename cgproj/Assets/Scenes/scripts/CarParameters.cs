@@ -58,10 +58,10 @@ public class FloatGene : IGene
 
     private static float SampleGaussian(float mean, float stddev = 0.15f)
     {
-        float x1 = Random.Range(0f,1f);
-        float x2 = Random.Range(0f,1f);
+        float x1 = Random.Range(0.0f, 1.0f);
+        float x2 = Random.Range(0.0f, 1.0f);
 
-        float y1 = (float) (Math.Sqrt(-2.0 * Math.Log(x1)) * Math.Cos(2.0 * Math.PI * x2));
+        float y1 = (float) (Math.Sqrt(-2.0f * Math.Log(x1)) * Math.Cos(2.0f * Math.PI * x2));
         return y1 * stddev + mean;
     }
 }
@@ -82,7 +82,14 @@ public class BoolGene : IGene
 
     public IGene MutatedCopy()
     {
-        return new BoolGene(!value);
+        if (Random.Range(0.0f, 1.0f) > 0.7f)
+        {
+            return new BoolGene(!value);
+        }
+        else
+        {
+            return new BoolGene(value);
+        }
     }
 }
 

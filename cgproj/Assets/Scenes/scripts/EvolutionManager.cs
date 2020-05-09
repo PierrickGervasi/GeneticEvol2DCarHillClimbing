@@ -9,9 +9,15 @@ public class EvolutionManager : MonoBehaviour
 {
     public CarGenerator generator;
 
-    public static readonly int GENERATION_SIZE = 8;
-    public static readonly float crossoverRate = 0.9f;
-    public static readonly float mutationRate = 0.15f;
+    public static readonly int GENERATION_SIZE = 12;
+    public static readonly int MAX_GENERATION = 6;
+    public static readonly float STATIC_CROSSOVER_RATE = 0.9f;
+    public static readonly float STATIC_MUTATION_RATE = 0.15f;
+
+    public bool dynamicRates = true;
+
+    public float mutationRate = 0.0f;
+    public float crossoverRate = 1.0f;
 
     public bool manualCarParams = false;
     public float manualBodyWidth = 2.5f;
@@ -78,6 +84,9 @@ public class EvolutionManager : MonoBehaviour
 
     public void EvaluationFinished(CarPerformance performance) {
         Debug.Log($"{generation}-{currentCarIndex} - Evaluation Finished! distance - {performance.distance}");
+
+        carsPerformance[currentCarIndex] = performance;
+
         if (currentCarIndex != 0)
         {
             if (performance.TotalScore() >= carsPerformance[bestCar].TotalScore())
@@ -90,8 +99,7 @@ public class EvolutionManager : MonoBehaviour
                 secondBestCar = currentCarIndex;
             }
         }
-
-        carsPerformance[currentCarIndex] = performance;
+        
         ++currentCarIndex;
 
         if (currentCarIndex >= GENERATION_SIZE)
@@ -144,13 +152,20 @@ public class EvolutionManager : MonoBehaviour
     private void GenerateNextGeneration()
     {
         ++generation;
+        if (generation > MAX_GENERATION)
+        {
+            // TODO: DO SOMETHING ELSE
+        }
 
         var bestParent = cars[bestCar];
         var secondBestParent = cars[secondBestCar];
 
-        Debug.LogWarning($"New Generation from {carsPerformance[bestCar].TotalScore()} and {carsPerformance[secondBestCar].TotalScore()}");
+        Debug.LogWarning($"New Generation from {bestCar}-{carsPerformance[bestCar].TotalScore()} and {secondBestCar}-{carsPerformance[secondBestCar].TotalScore()}");
 
         NewGeneration();
+        
+        Debug.LogWarning($"Crossover Rate - {crossoverRate}, Mutation Rate - {mutationRate}");
+        
         
         for (int i = 0; i < GENERATION_SIZE; ++i)
         {
@@ -161,7 +176,6 @@ public class EvolutionManager : MonoBehaviour
             {
                 crossoverPoint = Convert.ToInt32(Random.Range(0.0f, 1.0f) * (CarParameters.GENE_COUNT - 1));
             }
-            Debug.Log($"crossover at {crossoverPoint}");
             for (int j = 0; j < CarParameters.GENE_COUNT; ++j)
             {
                 if (j >= crossoverPoint)
@@ -185,6 +199,19 @@ public class EvolutionManager : MonoBehaviour
 
     private void NewGeneration()
     {
+        if (dynamicRates)
+        {
+            mutationRate = (float) generation / MAX_GENERATION;
+            crossoverRate = 1.0f - mutationRate;
+        }
+        else
+        {
+            // static crossover rates
+            mutationRate = STATIC_MUTATION_RATE;
+            crossoverRate = STATIC_CROSSOVER_RATE;
+        }
+        
+
         currentCarIndex = 0;
         bestCar = 0;
         secondBestCar = 1;
