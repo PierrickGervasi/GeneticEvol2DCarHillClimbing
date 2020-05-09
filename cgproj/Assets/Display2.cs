@@ -22,7 +22,7 @@ public class Display2 : MonoBehaviour
         carsPerGen = transform.Find("carsPerGen_v").gameObject.GetComponent<Text>();
         carIndex = transform.Find("carIndex_v").gameObject.GetComponent<Text>();
 
-        genIndex.text = (managerScript.generation+1) + "/" + EvolutionManager.nbrOfGen;
+        genIndex.text = (managerScript.generation+1) + "/" + EvolutionManager.MAX_GENERATION;
         carsPerGen.text = EvolutionManager.GENERATION_SIZE.ToString();
         carIndex.text = (managerScript.currentCarIndex+1) + "/" + EvolutionManager.GENERATION_SIZE;
     }
@@ -30,7 +30,7 @@ public class Display2 : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        genIndex.text = (managerScript.generation+1) + "/" + EvolutionManager.nbrOfGen;
+        genIndex.text = (managerScript.generation+1) + "/" + EvolutionManager.MAX_GENERATION;
         carsPerGen.text = EvolutionManager.GENERATION_SIZE.ToString();
         carIndex.text = (managerScript.currentCarIndex+1) + "/" + EvolutionManager.GENERATION_SIZE;
     }
