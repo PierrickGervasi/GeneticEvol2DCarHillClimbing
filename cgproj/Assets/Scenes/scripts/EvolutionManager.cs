@@ -10,7 +10,7 @@ public class EvolutionManager : MonoBehaviour
     public CarGenerator generator;
 
     public static readonly int GENERATION_SIZE = 20;
-    public static readonly int MAX_GENERATION = 6;
+    public static readonly int MAX_GENERATION = 8;
     public static readonly float STATIC_CROSSOVER_RATE = 0.9f;
     public static readonly float STATIC_MUTATION_RATE = 0.15f;
 
@@ -98,7 +98,11 @@ public class EvolutionManager : MonoBehaviour
 
         if (currentCarIndex >= GENERATION_SIZE)
         {
-            GenerateNextGeneration();
+            if (GenerateNextGeneration() == false)
+            {
+                StartCoroutine(EndEvaluationCycle());
+                return;
+            }
         }
 
         StartCoroutine(ReloadEvaluationScene());
@@ -109,6 +113,13 @@ public class EvolutionManager : MonoBehaviour
         var unload = SceneManager.UnloadSceneAsync("EvaluationScene");
         yield return unload;
         SceneManager.LoadScene("EvaluationScene", LoadSceneMode.Additive);
+    }
+
+    private IEnumerator EndEvaluationCycle()
+    {
+        var unload = SceneManager.UnloadSceneAsync("EvaluationScene");
+        yield return unload;
+        SceneManager.LoadScene("EndScene", LoadSceneMode.Additive);
     }
 
     private void OnSceneFinishedLoading(Scene scene, LoadSceneMode mode)
@@ -142,12 +153,13 @@ public class EvolutionManager : MonoBehaviour
         }
     }
 
-    private void GenerateNextGeneration()
+    private bool GenerateNextGeneration()
     {
         ++generation;
         if (generation > MAX_GENERATION)
         {
-            // TODO: DO SOMETHING ELSE
+            // No next generation
+            return false;
         }
 
         var bestParent = cars[bestCar];
@@ -188,6 +200,8 @@ public class EvolutionManager : MonoBehaviour
 
             cars[i] = car;
         }
+
+        return true;
     }
 
     private void NewGeneration()
