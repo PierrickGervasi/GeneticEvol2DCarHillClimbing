@@ -35,9 +35,8 @@ public class EvolutionManager : MonoBehaviour
     private CarPerformance[] carsPerformance = new CarPerformance[GENERATION_SIZE];
     private int bestCar;
     private int secondBestCar;
-    private int currentCarIndex;
-
-    private int generation;
+    public int currentCarIndex;
+    public int generation;
 
     void OnEnable()
     {
@@ -75,12 +74,7 @@ public class EvolutionManager : MonoBehaviour
 
         SceneManager.LoadScene("EvaluationScene", LoadSceneMode.Additive);
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    
 
     public void EvaluationFinished(CarPerformance performance) {
         Debug.Log($"{generation}-{currentCarIndex} - Evaluation Finished! distance - {performance.distance}");
@@ -104,7 +98,6 @@ public class EvolutionManager : MonoBehaviour
 
         if (currentCarIndex >= GENERATION_SIZE)
         {
-            Debug.Log("Generation done evaluating!");
             GenerateNextGeneration();
         }
 
