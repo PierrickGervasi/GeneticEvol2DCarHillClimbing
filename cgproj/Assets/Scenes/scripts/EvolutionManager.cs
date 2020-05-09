@@ -73,7 +73,9 @@ public class EvolutionManager : MonoBehaviour
 
     public void EvaluationFinished(CarPerformance performance) {
         Debug.Log($"{generation}-{currentCarIndex} - Evaluation Finished! distance - {performance.distance}");
-        if (currentCarIndex != 0)
+        
+
+        if (currentCarIndex >1)
         {
             if (performance.TotalScore() >= carsPerformance[bestCar].TotalScore())
             {
@@ -85,21 +87,22 @@ public class EvolutionManager : MonoBehaviour
                 secondBestCar = currentCarIndex;
             }
         }
-
+        
         carsPerformance[currentCarIndex] = performance;
+
         ++currentCarIndex;
 
         if (currentCarIndex >= GENERATION_SIZE)
         {
-            GenerateNextGeneration();
-
-//            if (generation < nbrOfGen-1)
-//            {
-//            }
-//            else
-//            {
-//                // Action if we reached the limit of generations
-//            }
+            if (generation < nbrOfGen-1)
+            {
+                GenerateNextGeneration();
+            }
+            else
+            {
+                // Action if we reached the limit of generations
+                Debug.Log("end");
+            }
             
         }
 
