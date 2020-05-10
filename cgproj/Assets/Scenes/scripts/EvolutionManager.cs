@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
@@ -31,10 +32,9 @@ public class EvolutionManager : MonoBehaviour
     public float manualWheel1YRatio = 0.1f;
     public bool manualWheel1Motor = false;
 
-    private CarParameters[] cars = new CarParameters[GENERATION_SIZE];
-    private CarPerformance[] carsPerformance = new CarPerformance[GENERATION_SIZE];
-    private int bestCar;
-    private int secondBestCar;
+    private CarData[] cars = new CarData[GENERATION_SIZE];
+    private CarData bestCar;
+    private CarData secondBestCar;
     public int currentCarIndex;
     public int generation;
 
@@ -56,20 +56,20 @@ public class EvolutionManager : MonoBehaviour
 
         for(int i = 0; i < GENERATION_SIZE; ++i)
         {
-            CarParameters car = null;
+            CarParameters carParams = null;
             if(manualCarParams)
             {
-                car = ScriptableObject.CreateInstance<CarParameters>();
-                car.SetCarBody(manualBodyWidth, manualBodyHeight);
-                car.SetCarWheel(0, manualWheel0XRatio, manualWheel0YRatio, manualWheel0Diameter, manualWheel0Motor);
-                car.SetCarWheel(1, manualWheel1XRatio, manualWheel1YRatio, manualWheel1Diameter, manualWheel1Motor);
+                carParams = ScriptableObject.CreateInstance<CarParameters>();
+                carParams.SetCarBody(manualBodyWidth, manualBodyHeight);
+                carParams.SetCarWheel(0, manualWheel0XRatio, manualWheel0YRatio, manualWheel0Diameter, manualWheel0Motor);
+                carParams.SetCarWheel(1, manualWheel1XRatio, manualWheel1YRatio, manualWheel1Diameter, manualWheel1Motor);
             }
             else
             {
-                car = generator.GenerateRandomCar();
+                carParams = generator.GenerateRandomCar();
             }
             
-            cars[i] = car;
+            cars[i] = new CarData(carParams, i, generation);
         }
 
         SceneManager.LoadScene("EvaluationScene", LoadSceneMode.Additive);
@@ -79,25 +79,14 @@ public class EvolutionManager : MonoBehaviour
     public void EvaluationFinished(CarPerformance performance) {
         Debug.Log($"{generation}-{currentCarIndex} - Evaluation Finished! distance - {performance.distance}");
 
-        carsPerformance[currentCarIndex] = performance;
-
-        if (currentCarIndex != 0)
-        {
-            if (performance.TotalScore() >= carsPerformance[bestCar].TotalScore())
-            {
-                secondBestCar = bestCar;
-                bestCar = currentCarIndex;
-            }
-            else if(performance.TotalScore() > carsPerformance[secondBestCar].TotalScore())
-            {
-                secondBestCar = currentCarIndex;
-            }
-        }
+        cars[currentCarIndex].performance = performance;
         
         ++currentCarIndex;
 
         if (currentCarIndex >= GENERATION_SIZE)
         {
+            CompareCarsPerformance();
+
             if (GenerateNextGeneration() == false)
             {
                 StartCoroutine(EndEvaluationCycle());
@@ -139,7 +128,7 @@ public class EvolutionManager : MonoBehaviour
             if (carGameObj)
             {
                 var carTransformer = carGameObj.GetComponent<CarTransformer>();
-                carTransformer.carParams = car;
+                carTransformer.carParams = car.parameters;
                 carTransformer.TransformByCarParams();
 
                 // Start car
@@ -162,10 +151,10 @@ public class EvolutionManager : MonoBehaviour
             return false;
         }
 
-        var bestParent = cars[bestCar];
-        var secondBestParent = cars[secondBestCar];
+        var bestParent = bestCar;
+        var secondBestParent = bestCar;
 
-        Debug.LogWarning($"New Generation from {bestCar}-{carsPerformance[bestCar].TotalScore()} and {secondBestCar}-{carsPerformance[secondBestCar].TotalScore()}");
+        Debug.LogWarning($"New Generation from {bestCar.carIndex}-{bestCar.performance.TotalScore()} and {secondBestCar.carIndex}-{secondBestCar.performance.TotalScore()}");
 
         NewGeneration();
         
@@ -176,7 +165,7 @@ public class EvolutionManager : MonoBehaviour
         {
             int crossoverPoint = CarParameters.GENE_COUNT;
             var shouldCrossOver = Random.Range(0.0f,1.0f) <= crossoverRate;
-            var car = ScriptableObject.CreateInstance<CarParameters>();
+            var carParams = ScriptableObject.CreateInstance<CarParameters>();
             if (shouldCrossOver)
             {
                 crossoverPoint = Convert.ToInt32(Random.Range(0.0f, 1.0f) * (CarParameters.GENE_COUNT - 1));
@@ -185,20 +174,20 @@ public class EvolutionManager : MonoBehaviour
             {
                 if (j >= crossoverPoint)
                 {
-                    car.SetGene(j, secondBestParent.GetGene(j));
+                    carParams.SetGene(j, secondBestParent.parameters.GetGene(j));
                 }
                 else
                 {
-                    car.SetGene(j, bestParent.GetGene(j));
+                    carParams.SetGene(j, bestParent.parameters.GetGene(j));
                 }
 
                 if (Random.Range(0.0f, 1.0f) <= mutationRate)
                 {
-                    car.SetGene(j, car.GetGene(j).MutatedCopy());
+                    carParams.SetGene(j, carParams.GetGene(j).MutatedCopy());
                 }
             }
-
-            cars[i] = car;
+            
+            cars[i] = new CarData(carParams, i, generation);
         }
 
         return true;
@@ -217,10 +206,15 @@ public class EvolutionManager : MonoBehaviour
             mutationRate = STATIC_MUTATION_RATE;
             crossoverRate = STATIC_CROSSOVER_RATE;
         }
-        
 
         currentCarIndex = 0;
-        bestCar = 0;
-        secondBestCar = 1;
+    }
+
+    private void CompareCarsPerformance()
+    {
+        var sortedCars = cars.OrderByDescending(car => car.performance.TotalScore());
+
+        bestCar = sortedCars.First();
+        secondBestCar = sortedCars.ElementAt(1);
     }
 }
