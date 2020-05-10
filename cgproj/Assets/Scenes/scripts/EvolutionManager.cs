@@ -32,6 +32,8 @@ public class EvolutionManager : MonoBehaviour
     public float manualWheel1YRatio = 0.1f;
     public bool manualWheel1Motor = false;
 
+    public List<CarData> bestCars = new List<CarData>();
+
     private CarData[] cars = new CarData[GENERATION_SIZE];
     private CarData bestCar;
     private CarData secondBestCar;
@@ -216,5 +218,8 @@ public class EvolutionManager : MonoBehaviour
 
         bestCar = sortedCars.First();
         secondBestCar = sortedCars.ElementAt(1);
+
+        bestCars.Add(bestCar);
+        bestCars.Add(secondBestCar);
     }
 }
