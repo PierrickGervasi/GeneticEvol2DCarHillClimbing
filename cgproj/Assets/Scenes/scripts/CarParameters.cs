@@ -56,7 +56,7 @@ public class FloatGene : IGene
         return new FloatGene(value, minimum, maximum);
     }
 
-    private static float SampleGaussian(float mean, float stddev = 0.15f)
+    private static float SampleGaussian(float mean, float stddev = 0.20f)
     {
         float x1 = Random.Range(0.0f, 1.0f);
         float x2 = Random.Range(0.0f, 1.0f);
@@ -96,7 +96,7 @@ public class BoolGene : IGene
 public class CarWheel
 {
     public static readonly float DIAMETER_MINIMUM = 0.8f;
-    public static readonly float DIAMETER_MAXIMUM = 1.8f;
+    public static readonly float DIAMETER_MAXIMUM = 2.2f;
 
     public static readonly float RATIO_MINIMUM = 0.0f;
     public static readonly float RATIO_MAXIMUM = 1.0f;
@@ -117,8 +117,8 @@ public class CarWheel
 
 public class CarBody
 {
-    public static readonly float MINIMUM = 1.5f;
-    public static readonly float MAXIMUM = 3.5f;
+    public static readonly float MINIMUM = 1.4f;
+    public static readonly float MAXIMUM = 3.4f;
 
     public CarBody(float w, float h)
     {

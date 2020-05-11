@@ -170,16 +170,16 @@ MonoBehaviour:
   mutationRate: 0.2
   crossoverRate: 1
   manualCarParams: 0
-  manualBodyWidth: 2.5
+  manualBodyWidth: 2
   manualBodyHeight: 1.5
-  manualWheel0Diameter: 1.2
+  manualWheel0Diameter: 1.7
   manualWheel0XRatio: 0.1
-  manualWheel0YRatio: 0.9
+  manualWheel0YRatio: 0.5
   manualWheel0Motor: 1
-  manualWheel1Diameter: 1.2
+  manualWheel1Diameter: 1.7
   manualWheel1XRatio: 0.9
-  manualWheel1YRatio: 0.9
-  manualWheel1Motor: 0
+  manualWheel1YRatio: 0.5
+  manualWheel1Motor: 1
   currentCarIndex: 0
   generation: 0
 --- !u!114 &1728479247

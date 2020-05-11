@@ -10,8 +10,8 @@ public class EvolutionManager : MonoBehaviour
 {
     public CarGenerator generator;
 
-    public static readonly int GENERATION_SIZE = 3;
-    public static readonly int MAX_GENERATION = 2;
+    public static readonly int GENERATION_SIZE = 20;
+    public static readonly int MAX_GENERATION = 10;
     public static readonly float STATIC_CROSSOVER_RATE = 0.9f;
     public static readonly float STATIC_MUTATION_RATE = 0.15f;
 
@@ -154,9 +154,9 @@ public class EvolutionManager : MonoBehaviour
         }
 
         var bestParent = bestCar;
-        var secondBestParent = bestCar;
+        var secondBestParent = secondBestCar;
 
-        Debug.LogWarning($"New Generation from {bestCar.carIndex}-{bestCar.performance.TotalScore()} and {secondBestCar.carIndex}-{secondBestCar.performance.TotalScore()}");
+        Debug.LogWarning($"New Generation from {bestParent.carIndex}-{bestParent.performance.TotalScore()} and {secondBestParent.carIndex}-{secondBestParent.performance.TotalScore()}");
 
         NewGeneration();
         

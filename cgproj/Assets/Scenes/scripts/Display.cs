@@ -24,13 +24,13 @@ public class Display : MonoBehaviour
 
     
     // RESTART CONDITION WHEN CAR STUCK IN LOOP
-    public float secBeforeRestartWhenLoop;
+    public float secBeforeRestartWhenLoop = 20.0f;
     private float lastCheckTimeLoop;
 
     
     // RESTART CONDITION WHEN CAR CAN'T MOVE
-    public int secBeforeRestartWhenStuck;
-    public float velocityCondition;
+    public int secBeforeRestartWhenStuck = 5;
+    public float velocityCondition = 0.2f;
     private float[] velocityValues;
     private float lastCheckTimeStuck;
     private int index;
