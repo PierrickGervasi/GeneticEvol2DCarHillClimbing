@@ -12,11 +12,11 @@ public class CarPerformance : ScriptableObject
 
     public float TotalScore()
         {
-            float perf = distance / time;
+            float perf = distance + (distance / time);
     
             if (finishedTrack)
             {
-                perf += 6.86f;
+                perf += 100f;
             }
             
             return perf;

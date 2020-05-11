@@ -33,14 +33,14 @@ public class CarController : MonoBehaviour
         if (carParams.GetWheel(0).hasMotor)
         {
             wheel0.useMotor = true;
-            var wheelMotor = new JointMotor2D {motorSpeed = 1000, maxMotorTorque = 35};
+            var wheelMotor = new JointMotor2D {motorSpeed = 1000, maxMotorTorque = 45};
             wheel0.motor = wheelMotor;
         }
 
         if (carParams.GetWheel(1).hasMotor)
         {
             wheel1.useMotor = true;
-            var wheelMotor = new JointMotor2D {motorSpeed = 1000, maxMotorTorque = 35};
+            var wheelMotor = new JointMotor2D {motorSpeed = 1000, maxMotorTorque = 45};
             wheel1.motor = wheelMotor;
         }
     }

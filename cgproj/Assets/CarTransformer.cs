@@ -5,8 +5,8 @@ using UnityEngine;
 public class CarTransformer : MonoBehaviour
 {
 
-    public int wheelsMassCoeff = 1;
-    public float bodyMassCoeff = 3.2f;
+    public float wheelsMassCoeff = 1.0f;
+    public float bodyMassCoeff = 3.4f;
     
     public GameObject wheel0;
     public GameObject wheel1;
