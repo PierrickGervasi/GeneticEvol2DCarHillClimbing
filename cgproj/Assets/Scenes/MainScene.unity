@@ -167,7 +167,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   generator: {fileID: 1728479247}
   dynamicRates: 1
-  mutationRate: 0
+  mutationRate: 0.2
   crossoverRate: 1
   manualCarParams: 0
   manualBodyWidth: 2.5
