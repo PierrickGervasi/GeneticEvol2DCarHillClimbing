@@ -10,8 +10,8 @@ public class EvolutionManager : MonoBehaviour
 {
     public CarGenerator generator;
 
-    public static readonly int GENERATION_SIZE = 20;
-    public static readonly int MAX_GENERATION = 10;
+    public static readonly int GENERATION_SIZE = 2;
+    public static readonly int MAX_GENERATION = 1;
     public static readonly float STATIC_CROSSOVER_RATE = 0.9f;
     public static readonly float STATIC_MUTATION_RATE = 0.15f;
 

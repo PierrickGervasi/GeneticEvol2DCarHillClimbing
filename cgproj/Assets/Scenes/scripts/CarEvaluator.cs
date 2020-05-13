@@ -29,6 +29,7 @@ public class CarEvaluator : MonoBehaviour
             performance.distance = distance;
             performance.time = totalTime;
             performance.finishedTrack = reachedTrackEnding;
+            performance.averageSpeed = distance / totalTime;
 
             evolutionManager.EvaluationFinished(performance);
         }
