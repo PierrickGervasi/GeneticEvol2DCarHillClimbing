@@ -44,5 +44,38 @@ public class CarController : MonoBehaviour
             wheel1.motor = wheelMotor;
         }
     }
+
+    public void StartCarMotors()
+    {
+        var carParams = transformer.carParams;
+
+        if (carParams.GetWheel(0).hasMotor)
+        {
+            wheel0.useMotor = true;
+            var wheelMotor = new JointMotor2D {motorSpeed = 1000, maxMotorTorque = 45};
+            wheel0.motor = wheelMotor;
+        }
+
+        else
+        {
+            wheel0.useMotor = false;
+            var backWheelmotor = new JointMotor2D {motorSpeed = 500, maxMotorTorque = 0};
+            wheel0.motor = backWheelmotor;
+        }
+
+        if (carParams.GetWheel(1).hasMotor)
+        {
+            wheel1.useMotor = true;
+            var wheelMotor = new JointMotor2D {motorSpeed = 1000, maxMotorTorque = 45};
+            wheel1.motor = wheelMotor;
+        }
+        
+        else
+        {
+            wheel1.useMotor = false;
+            var frontWheelMotor = new JointMotor2D {motorSpeed = 500, maxMotorTorque = 0};
+            wheel1.motor = frontWheelMotor;
+        }
+    }
     
 }
