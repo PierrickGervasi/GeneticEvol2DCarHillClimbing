@@ -182,6 +182,8 @@ MonoBehaviour:
   manualWheel1Motor: 1
   currentCarIndex: 0
   generation: 0
+  nbrOfGenText: {fileID: 0}
+  carsPerGenText: {fileID: 0}
 --- !u!114 &1728479247
 MonoBehaviour:
   m_ObjectHideFlags: 0
