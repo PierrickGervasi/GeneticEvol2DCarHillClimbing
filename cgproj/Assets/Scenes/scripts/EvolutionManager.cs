@@ -11,8 +11,8 @@ public class EvolutionManager : MonoBehaviour
 {
     public CarGenerator generator;
 
-    public static  int GENERATION_SIZE = 20;
-    public static  int MAX_GENERATION = 100;
+    public static  int GENERATION_SIZE = 2;
+    public static  int MAX_GENERATION = 1;
     public static readonly float STATIC_CROSSOVER_RATE = 0.9f;
     public static readonly float STATIC_MUTATION_RATE = 0.15f;
 
@@ -35,14 +35,14 @@ public class EvolutionManager : MonoBehaviour
 
     public List<CarData> bestCars = new List<CarData>();
 
-    private CarData[] cars = new CarData[GENERATION_SIZE];
+    private CarData[] cars;
     private CarData bestCar;
     private CarData secondBestCar;
     public int currentCarIndex;
     public int generation;
 
-    public Text nbrOfGenText;
-    public Text carsPerGenText;
+    public static bool buttonGoPushed;
+    private bool firstUpdateNotDone;
     
     void OnEnable()
     {
@@ -54,65 +54,48 @@ public class EvolutionManager : MonoBehaviour
         SceneManager.sceneLoaded -= OnSceneFinishedLoading;
     }
 
-//    public void onClickOnGo()
-//    {
-//        int nbrOfGen = Int32.Parse(nbrOfGenText.text);
-//        int carsPerGen = Int32.Parse(carsPerGenText.text);
-//
-//        GENERATION_SIZE = carsPerGen;
-//        MAX_GENERATION = nbrOfGen-1;
-//        
-//        generation = 0;
-//        NewGeneration();
-//
-//        for(int i = 0; i < GENERATION_SIZE; ++i)
-//        {
-//            CarParameters carParams = null;
-//            if(manualCarParams)
-//            {
-//                carParams = ScriptableObject.CreateInstance<CarParameters>();
-//                carParams.SetCarBody(manualBodyWidth, manualBodyHeight);
-//                carParams.SetCarWheel(0, manualWheel0XRatio, manualWheel0YRatio, manualWheel0Diameter, manualWheel0Motor);
-//                carParams.SetCarWheel(1, manualWheel1XRatio, manualWheel1YRatio, manualWheel1Diameter, manualWheel1Motor);
-//            }
-//            else
-//            {
-//                carParams = generator.GenerateRandomCar();
-//            }
-//            
-//            cars[i] = new CarData(carParams, i, generation);
-//        }
-//
-//        SceneManager.LoadScene("EvaluationScene", LoadSceneMode.Additive);
-//    }
-    
-    
     void Start()
     {
-        generation = 0;
-        NewGeneration();
-
-        for(int i = 0; i < GENERATION_SIZE; ++i)
-        {
-            CarParameters carParams = null;
-            if(manualCarParams)
-            {
-                carParams = ScriptableObject.CreateInstance<CarParameters>();
-                carParams.SetCarBody(manualBodyWidth, manualBodyHeight);
-                carParams.SetCarWheel(0, manualWheel0XRatio, manualWheel0YRatio, manualWheel0Diameter, manualWheel0Motor);
-                carParams.SetCarWheel(1, manualWheel1XRatio, manualWheel1YRatio, manualWheel1Diameter, manualWheel1Motor);
-            }
-            else
-            {
-                carParams = generator.GenerateRandomCar();
-            }
-            
-            cars[i] = new CarData(carParams, i, generation);
-        }
-
-        SceneManager.LoadScene("EvaluationScene", LoadSceneMode.Additive);
+        buttonGoPushed = false;
+        firstUpdateNotDone = true;
+        
+        SceneManager.LoadScene("BeginningScene", LoadSceneMode.Additive);
     }
-    
+
+
+    private void Update()
+    {
+        if (buttonGoPushed && firstUpdateNotDone)
+        {
+            firstUpdateNotDone = false;
+            Debug.Log("dans Update");
+                
+            cars = new CarData[GENERATION_SIZE];
+            generation = 0;
+            NewGeneration();
+
+            for(int i = 0; i < GENERATION_SIZE; ++i)
+            {
+                CarParameters carParams = null;
+                if(manualCarParams)
+                {
+                    carParams = ScriptableObject.CreateInstance<CarParameters>();
+                    carParams.SetCarBody(manualBodyWidth, manualBodyHeight);
+                    carParams.SetCarWheel(0, manualWheel0XRatio, manualWheel0YRatio, manualWheel0Diameter, manualWheel0Motor);
+                    carParams.SetCarWheel(1, manualWheel1XRatio, manualWheel1YRatio, manualWheel1Diameter, manualWheel1Motor);
+                }
+                else
+                {
+                    carParams = generator.GenerateRandomCar();
+                }
+            
+                cars[i] = new CarData(carParams, i, generation);
+            }
+
+            StartCoroutine(StartEvaluationScene());
+        }
+    }
+
 
     public void EvaluationFinished(CarPerformance performance) {
         Debug.Log($"{generation}-{currentCarIndex} - Evaluation Finished! distance - {performance.distance}");
@@ -135,6 +118,14 @@ public class EvolutionManager : MonoBehaviour
         StartCoroutine(ReloadEvaluationScene());
     }
 
+    
+    private IEnumerator StartEvaluationScene()
+    {
+        var unload = SceneManager.UnloadSceneAsync("BeginningScene");
+        yield return unload;
+        SceneManager.LoadScene("EvaluationScene", LoadSceneMode.Additive);
+    }
+    
     private IEnumerator ReloadEvaluationScene()
     {
         var unload = SceneManager.UnloadSceneAsync("EvaluationScene");
@@ -151,7 +142,7 @@ public class EvolutionManager : MonoBehaviour
 
     private void OnSceneFinishedLoading(Scene scene, LoadSceneMode mode)
     {
-        if (scene.name != "MainScene")
+        if (scene.name == "EvaluationScene")
         {
             if (currentCarIndex >= GENERATION_SIZE)
             {

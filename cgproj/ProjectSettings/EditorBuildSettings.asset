@@ -12,6 +12,9 @@ EditorBuildSettings:
     path: Assets/Scenes/EvaluationScene.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
   - enabled: 1
+    path: Assets/Scenes/BeginningScene.unity
+    guid: e6def8ace3a742149aa2330c8fa5d6a7
+  - enabled: 1
     path: Assets/Scenes/EndScene.unity
     guid: 947f7d60f2e920d4984e0e8c41b3b709
   m_configObjects: {}
