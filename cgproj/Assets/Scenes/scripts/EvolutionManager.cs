@@ -11,8 +11,8 @@ public class EvolutionManager : MonoBehaviour
 {
     public CarGenerator generator;
 
-    public static  int GENERATION_SIZE = 2;
-    public static  int MAX_GENERATION = 1;
+    public static  int GENERATION_SIZE = 24;
+    public static  int MAX_GENERATION = 10;
     public static readonly float STATIC_CROSSOVER_RATE = 0.9f;
     public static readonly float STATIC_MUTATION_RATE = 0.15f;
 
@@ -40,9 +40,7 @@ public class EvolutionManager : MonoBehaviour
     private CarData secondBestCar;
     public int currentCarIndex;
     public int generation;
-
-    public static bool buttonGoPushed;
-    private bool firstUpdateNotDone;
+    public int tournamentCount;
     
     void OnEnable()
     {
@@ -56,44 +54,54 @@ public class EvolutionManager : MonoBehaviour
 
     void Start()
     {
-        buttonGoPushed = false;
-        firstUpdateNotDone = true;
-        
         SceneManager.LoadScene("BeginningScene", LoadSceneMode.Additive);
     }
 
-
-    private void Update()
+    public void OnUserClickedGo()
     {
-        if (buttonGoPushed && firstUpdateNotDone)
+        if (GENERATION_SIZE < 2)
         {
-            firstUpdateNotDone = false;
-            Debug.Log("dans Update");
-                
-            cars = new CarData[GENERATION_SIZE];
-            generation = 0;
-            NewGeneration();
-
-            for(int i = 0; i < GENERATION_SIZE; ++i)
-            {
-                CarParameters carParams = null;
-                if(manualCarParams)
-                {
-                    carParams = ScriptableObject.CreateInstance<CarParameters>();
-                    carParams.SetCarBody(manualBodyWidth, manualBodyHeight);
-                    carParams.SetCarWheel(0, manualWheel0XRatio, manualWheel0YRatio, manualWheel0Diameter, manualWheel0Motor);
-                    carParams.SetCarWheel(1, manualWheel1XRatio, manualWheel1YRatio, manualWheel1Diameter, manualWheel1Motor);
-                }
-                else
-                {
-                    carParams = generator.GenerateRandomCar();
-                }
-            
-                cars[i] = new CarData(carParams, i, generation);
-            }
-
-            StartCoroutine(StartEvaluationScene());
+            GENERATION_SIZE = 2;
         }
+
+        if (MAX_GENERATION < 2)
+        {
+            MAX_GENERATION = 2;
+        }
+
+        // Minimum of 4 cars per tournament
+        if (GENERATION_SIZE >= 16)
+        {
+            tournamentCount = 4;
+        }
+        else
+        {
+            tournamentCount = 1;
+        }
+
+        cars = new CarData[GENERATION_SIZE];
+        generation = 0;
+        NewGeneration();
+
+        for(int i = 0; i < GENERATION_SIZE; ++i)
+        {
+            CarParameters carParams = null;
+            if(manualCarParams)
+            {
+                carParams = ScriptableObject.CreateInstance<CarParameters>();
+                carParams.SetCarBody(manualBodyWidth, manualBodyHeight);
+                carParams.SetCarWheel(0, manualWheel0XRatio, manualWheel0YRatio, manualWheel0Diameter, manualWheel0Motor);
+                carParams.SetCarWheel(1, manualWheel1XRatio, manualWheel1YRatio, manualWheel1Diameter, manualWheel1Motor);
+            }
+            else
+            {
+                carParams = generator.GenerateRandomCar();
+            }
+        
+            cars[i] = new CarData(carParams, i, generation);
+        }
+
+        StartCoroutine(StartEvaluationScene());
     }
 
 
@@ -106,7 +114,7 @@ public class EvolutionManager : MonoBehaviour
 
         if (currentCarIndex >= GENERATION_SIZE)
         {
-            CompareCarsPerformance();
+            SaveBestCars();
 
             if (GenerateNextGeneration() == false)
             {
@@ -180,44 +188,54 @@ public class EvolutionManager : MonoBehaviour
             return false;
         }
 
-        var bestParent = bestCar;
-        var secondBestParent = secondBestCar;
-
-        Debug.LogWarning($"New Generation from {bestParent.carIndex}-{bestParent.performance.TotalScore()} and {secondBestParent.carIndex}-{secondBestParent.performance.TotalScore()}");
-
         NewGeneration();
         
         Debug.LogWarning($"Crossover Rate - {crossoverRate}, Mutation Rate - {mutationRate}");
         
-        
-        for (int i = 0; i < GENERATION_SIZE; ++i)
-        {
-            int crossoverPoint = CarParameters.GENE_COUNT;
-            var shouldCrossOver = Random.Range(0.0f,1.0f) <= crossoverRate;
-            var carParams = ScriptableObject.CreateInstance<CarParameters>();
-            if (shouldCrossOver)
-            {
-                crossoverPoint = Convert.ToInt32(Random.Range(0.0f, 1.0f) * (CarParameters.GENE_COUNT - 1));
-            }
-            for (int j = 0; j < CarParameters.GENE_COUNT; ++j)
-            {
-                if (j >= crossoverPoint)
-                {
-                    carParams.SetGene(j, secondBestParent.parameters.GetGene(j));
-                }
-                else
-                {
-                    carParams.SetGene(j, bestParent.parameters.GetGene(j));
-                }
+        int carsPerTournament = GENERATION_SIZE / tournamentCount; 
+        var shuffledCars = cars.OrderBy(a => Guid.NewGuid()).ToList();
 
-                if (Random.Range(0.0f, 1.0f) <= mutationRate)
-                {
-                    carParams.SetGene(j, carParams.GetGene(j).MutatedCopy());
-                }
-            }
+        for (int tournament = 0; tournament  < tournamentCount; ++tournament)
+        {
+            int carIndexBase = tournament*carsPerTournament;
+
+            var tournamentCars = shuffledCars.Skip(carIndexBase).Take(carsPerTournament);
+            var sortedTournament = tournamentCars.OrderByDescending(car => car.performance.TotalScore());
+            var bestParent = sortedTournament.First();
+            var secondBestParent = sortedTournament.Skip(1).First();
+
+            Debug.LogWarning($"Tournament #{tournament} winners are - {bestParent.carIndex}-{bestParent.performance.TotalScore()} and {secondBestParent.carIndex}-{secondBestParent.performance.TotalScore()}");
             
-            cars[i] = new CarData(carParams, i, generation);
+            for (int i = 0; i < tournamentCars.Count(); ++i)
+            {
+                int crossoverPoint = CarParameters.GENE_COUNT;
+                var shouldCrossOver = Random.Range(0.0f,1.0f) <= crossoverRate;
+                var carParams = ScriptableObject.CreateInstance<CarParameters>();
+                if (shouldCrossOver)
+                {
+                    crossoverPoint = Convert.ToInt32(Random.Range(0.0f, 1.0f) * (CarParameters.GENE_COUNT - 1));
+                }
+                for (int j = 0; j < CarParameters.GENE_COUNT; ++j)
+                {
+                    if (j >= crossoverPoint)
+                    {
+                        carParams.SetGene(j, secondBestParent.parameters.GetGene(j));
+                    }
+                    else
+                    {
+                        carParams.SetGene(j, bestParent.parameters.GetGene(j));
+                    }
+
+                    if (Random.Range(0.0f, 1.0f) <= mutationRate)
+                    {
+                        carParams.SetGene(j, carParams.GetGene(j).MutatedCopy());
+                    }
+                }
+                
+                cars[carIndexBase + i] = new CarData(carParams, carIndexBase + i, generation);
+            }
         }
+        
 
         return true;
     }
@@ -239,7 +257,7 @@ public class EvolutionManager : MonoBehaviour
         currentCarIndex = 0;
     }
 
-    private void CompareCarsPerformance()
+    private void SaveBestCars()
     {
         var sortedCars = cars.OrderByDescending(car => car.performance.TotalScore());
 

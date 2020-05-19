@@ -9,6 +9,14 @@ public class BeginAlgorithm : MonoBehaviour
 
     public Text nbrOfGenText;
     public Text carsPerGenText;
+
+    private EvolutionManager evolutionManager;
+
+    void Start()
+    {
+        var go = GameObject.Find("EvolutionManager");
+        evolutionManager = go.GetComponent<EvolutionManager>();
+    }
     
     public void onClick()
     {
@@ -17,6 +25,7 @@ public class BeginAlgorithm : MonoBehaviour
 
         EvolutionManager.MAX_GENERATION = nbrOfGen - 1;
         EvolutionManager.GENERATION_SIZE = carsPerGen;
-        EvolutionManager.buttonGoPushed = true;
+        
+        evolutionManager.OnUserClickedGo();
     }
 }
