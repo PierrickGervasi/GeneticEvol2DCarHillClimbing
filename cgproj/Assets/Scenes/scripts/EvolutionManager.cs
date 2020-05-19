@@ -40,6 +40,7 @@ public class EvolutionManager : MonoBehaviour
     private CarData secondBestCar;
     public int currentCarIndex;
     public int generation;
+    public int tournamentSize;
 
     public static bool buttonGoPushed;
     private bool firstUpdateNotDone;
@@ -62,38 +63,31 @@ public class EvolutionManager : MonoBehaviour
         SceneManager.LoadScene("BeginningScene", LoadSceneMode.Additive);
     }
 
+    public void OnUserClickedGo()
+    {         
+        cars = new CarData[GENERATION_SIZE];
+        generation = 0;
+        NewGeneration();
 
-    private void Update()
-    {
-        if (buttonGoPushed && firstUpdateNotDone)
+        for(int i = 0; i < GENERATION_SIZE; ++i)
         {
-            firstUpdateNotDone = false;
-            Debug.Log("dans Update");
-                
-            cars = new CarData[GENERATION_SIZE];
-            generation = 0;
-            NewGeneration();
-
-            for(int i = 0; i < GENERATION_SIZE; ++i)
+            CarParameters carParams = null;
+            if(manualCarParams)
             {
-                CarParameters carParams = null;
-                if(manualCarParams)
-                {
-                    carParams = ScriptableObject.CreateInstance<CarParameters>();
-                    carParams.SetCarBody(manualBodyWidth, manualBodyHeight);
-                    carParams.SetCarWheel(0, manualWheel0XRatio, manualWheel0YRatio, manualWheel0Diameter, manualWheel0Motor);
-                    carParams.SetCarWheel(1, manualWheel1XRatio, manualWheel1YRatio, manualWheel1Diameter, manualWheel1Motor);
-                }
-                else
-                {
-                    carParams = generator.GenerateRandomCar();
-                }
-            
-                cars[i] = new CarData(carParams, i, generation);
+                carParams = ScriptableObject.CreateInstance<CarParameters>();
+                carParams.SetCarBody(manualBodyWidth, manualBodyHeight);
+                carParams.SetCarWheel(0, manualWheel0XRatio, manualWheel0YRatio, manualWheel0Diameter, manualWheel0Motor);
+                carParams.SetCarWheel(1, manualWheel1XRatio, manualWheel1YRatio, manualWheel1Diameter, manualWheel1Motor);
             }
-
-            StartCoroutine(StartEvaluationScene());
+            else
+            {
+                carParams = generator.GenerateRandomCar();
+            }
+        
+            cars[i] = new CarData(carParams, i, generation);
         }
+
+        StartCoroutine(StartEvaluationScene());
     }
 
 
